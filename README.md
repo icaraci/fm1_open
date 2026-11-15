@@ -59,6 +59,21 @@ For a local firmware build without a distribution source URL, run `./sdk/Build.p
 
 The web version builds from the included C sources. Its first build downloads WASI SDK 27; set `FM1_WASI_SDK` to reuse an installation. Outputs are `build/preview/index.html`, `build/dx7/generated/FM1_OFFICIAL_OPEN.fwsc` and `build/official-web/FM1-Official-Open-Source.html`.
 
+On macOS or Linux the same browser build runs without PowerShell. `tools/Build-Web.py` uses the same sources, flags, input set and source hash as `tools/Build-Web.ps1`, pins the WASI SDK 27 archive per host, and assembles the same preview page (firmware packaging stays on Windows):
+
+~~~bash
+python3 tools/Build-Web.py --local-preview     # build/preview/index.html
+python3 tools/Build-Web.py --local-preview --check   # plus a headless smoke test
+~~~
+
+`tools/sim-headless.mjs` boots the built module without a browser, drives panel buttons and MIDI, and writes the LCD framebuffer as a PNG, so panel and sequencer changes can be checked on the build host:
+
+~~~bash
+node tools/sim-headless.mjs --check
+node tools/sim-headless.mjs --button 12 --frames 20 --png playing.png
+node tools/sim-headless.mjs --control 0:12:1 --midi "90 3c 64" --json
+~~~
+
 The [per-track tuning API](app/instrument.h) supports custom tuning; a dedicated tuning editor is not included.
 
 ## License
